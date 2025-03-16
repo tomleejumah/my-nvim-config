@@ -33,5 +33,5 @@ vim.opt.guicursor = ""
 require("core.plugins")
 require("core.mappings")
 require("core.lsp")
-require("core.autosave")
-
+require('core.terminal')
+--require("core.autosave")
