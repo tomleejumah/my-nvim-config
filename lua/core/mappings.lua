@@ -1,6 +1,8 @@
 local opts = { noremap = true, silent = true }
 
 
+-- vim.api.nvim_set_keymap('n', '<leader>t', ':buffer term://*<CR>', { noremap = true, silent = true })
+
 -- Disable arrow keys
 vim.api.nvim_set_keymap('n', '<Up>', '<NOP>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Down>', '<NOP>', { noremap = true, silent = true })
@@ -14,6 +16,11 @@ vim.cmd([[
     cabbrev NTC NvimTreeCollapse
     cabbrev NTFF NvimTreeFindFile
 ]])
+
+-- Toggle comments with Ctrl+/
+vim.keymap.set('n', '<C-_>', require('Comment.api').toggle.linewise.current, { desc = 'Toggle comment' })
+vim.keymap.set('v', '<C-_>', '<ESC><cmd>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>',
+  { desc = 'Toggle comment' })
 
 -- File navigation with Telescope
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>", opts) -- Find files by name
@@ -133,7 +140,43 @@ function _G.OpenTerminalBottomThird()
 end
 
 -- Toggle terminal
-vim.keymap.set("n", "<leader>tt", ":lua OpenTerminalBottomThird()<CR>", opts) -- Open terminal in bottom third
+-- vim.keymap.set("n", "<leader>tt", ":lua OpenTerminalBottomThird()<CR>", opts) -- Open terminal in bottom third
+
+vim.api.nvim_set_keymap("n", "<leader>tt", ":lua PromptTerminalBuffer()<CR>", { noremap = true, silent = true })
+
+function PromptTerminalBuffer()
+  local terminals = {}
+
+  -- Find all terminal buffers and store their numbers
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    local bufname = vim.api.nvim_buf_get_name(bufnr)
+    if string.find(bufname, "term://") then
+      table.insert(terminals, bufnr)
+    end
+  end
+
+  if #terminals == 0 then
+    -- No terminals exist, create a new one
+    vim.cmd("botright 10split | term")
+    return
+  end
+
+  -- Display the list of terminal buffers
+  print("Available terminal buffers:")
+  for _, bufnr in ipairs(terminals) do
+    print(bufnr .. ": " .. vim.api.nvim_buf_get_name(bufnr))
+  end
+
+  -- Prompt the user for a buffer number
+  local term_bufnr = tonumber(vim.fn.input("Enter terminal buffer number: "))
+
+  -- Validate input and switch to selected buffer
+  if term_bufnr and vim.fn.bufexists(term_bufnr) == 1 then
+    vim.cmd("botright 10split | buffer " .. term_bufnr)
+  else
+    print("Invalid buffer number!")
+  end
+end
 
 -- Trouble.nvim keymaps (diagnostics viewer)
 vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>", { desc = "Toggle Trouble" })                              -- Toggle trouble panel

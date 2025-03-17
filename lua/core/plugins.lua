@@ -129,8 +129,10 @@ return require("lazy").setup({
   },
 
   {
-    "numToStr/Comment.nvim",
-    config = true,
+    'numToStr/Comment.nvim',
+    config = function()
+      require('Comment').setup()
+    end
   },
 
   -- Formatter
