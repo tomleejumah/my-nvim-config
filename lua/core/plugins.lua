@@ -19,6 +19,11 @@ return require("lazy").setup({
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
   },
+  --Tabnine Autocompletion
+  {
+    "codota/tabnine-nvim",
+    build = "./dl_binaries.sh",
+  },
 
   -- Enhanced f/t motions
   {
@@ -27,7 +32,7 @@ return require("lazy").setup({
       require('leap').add_default_mappings()
     end,
   },
-  
+
 
   -- Surround text objects
   {
@@ -38,10 +43,10 @@ return require("lazy").setup({
 
   -- Better quickfix list
   --{
-   -- "kevinhwang91/nvim-bqf",
+  -- "kevinhwang91/nvim-bqf",
   --  ft = "qf",
-   -- config = true,
- -- },
+  -- config = true,
+  -- },
 
   -- Required dependency
   { "nvim-neotest/nvim-nio" },
@@ -172,13 +177,13 @@ return require("lazy").setup({
   },
 
   -- UI improvements
- -- {
- --   "folke/noice.nvim",
- --   event = "VeryLazy",
- --   dependencies = {
+  -- {
+  --   "folke/noice.nvim",
+  --   event = "VeryLazy",
+  --   dependencies = {
   --    "MunifTanjim/nui.nvim",
- --   },
- -- },
+  --   },
+  -- },
 
   -- Floating diagnostics
   {
