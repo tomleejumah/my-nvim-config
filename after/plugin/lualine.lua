@@ -3,7 +3,7 @@ local wakatime = require("core.wakatime")
 
 require("lualine").setup({
   options = {
-    theme = "auto",
+    theme = "base16",
     component_separators = "|",
     section_separators = { left = "", right = "" },
     globalstatus = true,

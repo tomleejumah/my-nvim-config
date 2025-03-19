@@ -1,6 +1,8 @@
 local uv = require("luv")
 
-local current_time = ""
+local M = {}
+M.current_time = "🅆 N/A "
+
 local function set_interval(interval, callback)
   local timer = uv.new_timer()
   local function ontimeout()
@@ -15,37 +17,36 @@ local function update_wakatime()
   local stdout = uv.new_pipe()
   local stderr = uv.new_pipe()
 
-  local handle, pid =
-      uv.spawn(
-        "wakatime",
-        {
-          args = { "--today" },
-          stdio = { stdin, stdout, stderr }
-        },
-        function(code, signal) -- on exit
-          stdin:close()
-          stdout:close()
-          stderr:close()
-        end
-      )
-
-  uv.read_start(
-    stdout,
-    function(err, data)
-      assert(not err, err)
-      if data then
-        current_time = "🅆 " .. data:sub(1, #data - 2) .. " "
-      end
+  uv.spawn(
+    "wakatime",
+    {
+      args = { "--today" },
+      stdio = { stdin, stdout, stderr }
+    },
+    function(code, signal)
+      stdin:close()
+      stdout:close()
+      stderr:close()
     end
   )
+
+  uv.read_start(stdout, function(err, data)
+    if err then
+      print("WakaTime error:", err)
+      return
+    end
+    if data then
+      -- M.current_time = "🅆 " .. data:gsub("%s+$", "") .. " "
+      M.current_time = " " .. data:gsub("%s+$", "") .. " "
+    end
+  end)
 end
 
--- Set interval to 5000ms (5 seconds) as requested
-set_interval(5000, update_wakatime)
+update_wakatime()                     -- Run once
+set_interval(180000, update_wakatime) -- Update every 3minutes
 
-local M = {}
 M.get_wakatime = function()
-  return current_time
+  return M.current_time
 end
 
 return M

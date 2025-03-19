@@ -1,7 +1,7 @@
 local opts = { noremap = true, silent = true }
 
-
--- vim.api.nvim_set_keymap('n', '<leader>t', ':buffer term://*<CR>', { noremap = true, silent = true })
+--Mappings for TodoLocList
+vim.api.nvim_set_keymap('n', '<leader>td', ':TodoLocList<CR>', { noremap = true, silent = true })
 
 -- Disable arrow keys
 vim.api.nvim_set_keymap('n', '<Up>', '<NOP>', { noremap = true, silent = true })

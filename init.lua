@@ -2,6 +2,7 @@
 vim.g.mapleader = " "
 
 -- General settings
+vim.opt.cursorline = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.expandtab = true
@@ -34,4 +35,5 @@ require("core.plugins")
 require("core.mappings")
 require("core.lsp")
 require('core.terminal')
+--require('core.todo_highlights')
 --require("core.autosave")
