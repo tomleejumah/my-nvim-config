@@ -23,17 +23,19 @@ vim.keymap.set('v', '<C-_>', '<ESC><cmd>lua require("Comment.api").toggle.linewi
   { desc = 'Toggle comment' })
 
 -- File navigation with Telescope
+
+vim.keymap.set("n", "<C-f>", ":Telescope find_files<CR>", opts)      -- Find files using Ctrl+F
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>", opts) -- Find files by name
 vim.keymap.set("n", "<leader>fg", ":Telescope live_grep<CR>", opts)  -- Find text in files (grep)
 vim.keymap.set("n", "<leader>fb", ":Telescope buffers<CR>", opts)    -- Browse open buffers
 
--- File explorer
-vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", opts) -- Toggle file explorer
+-- file explorer
+vim.keymap.set("n", "<leader>e", ":nvimtreetoggle<cr>", opts) -- toggle file explorer
 
--- Buffer navigation
-vim.keymap.set("n", "<leader>bn", ":bnext<CR>", opts)     -- Go to next buffer
-vim.keymap.set("n", "<leader>bp", ":bprevious<CR>", opts) -- Go to previous buffer
-vim.keymap.set("n", "<leader>bd", ":bdelete<CR>", opts)   -- Delete current buffer
+-- buffer navigation
+vim.keymap.set("n", "<leader>bn", ":bnext<cr>", opts)     -- go to next buffer
+vim.keymap.set("n", "<leader>bp", ":bprevious<cr>", opts) -- go to previous buffer
+vim.keymap.set("n", "<leader>bd", ":bdelete<cr>", opts)   -- delete current buffer
 
 -- File operations shortcuts
 vim.keymap.set("n", "<leader>w", ":w<CR>", opts)       -- Save file
@@ -115,69 +117,6 @@ end
 
 vim.keymap.set("n", "<leader>nf", create_new_file, { desc = "Create new file" }) -- Create a new file
 
--- Terminal function
-function _G.OpenTerminalBottomThird()
-  -- Check if a terminal buffer already exists
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.api.nvim_buf_get_option(buf, "buftype") == "terminal" then
-      -- Switch to the existing terminal window
-      vim.cmd("botright split | resize " .. math.floor(vim.o.lines * 0.33))
-      vim.cmd("buffer " .. buf)
-      vim.cmd("startinsert")
-      return
-    end
-  end
-
-  -- If no terminal buffer exists, create a new one
-  local height = math.floor(vim.o.lines * 0.33)
-  vim.cmd("botright split | resize " .. height)
-  vim.cmd("term")
-
-  -- Disable line numbers and enter insert mode
-  vim.api.nvim_win_set_option(0, "number", false)
-  vim.api.nvim_win_set_option(0, "relativenumber", false)
-  vim.cmd("startinsert")
-end
-
--- Toggle terminal
--- vim.keymap.set("n", "<leader>tt", ":lua OpenTerminalBottomThird()<CR>", opts) -- Open terminal in bottom third
-
-vim.api.nvim_set_keymap("n", "<leader>tt", ":lua PromptTerminalBuffer()<CR>", { noremap = true, silent = true })
-
-function PromptTerminalBuffer()
-  local terminals = {}
-
-  -- Find all terminal buffers and store their numbers
-  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-    local bufname = vim.api.nvim_buf_get_name(bufnr)
-    if string.find(bufname, "term://") then
-      table.insert(terminals, bufnr)
-    end
-  end
-
-  if #terminals == 0 then
-    -- No terminals exist, create a new one
-    vim.cmd("botright 10split | term")
-    return
-  end
-
-  -- Display the list of terminal buffers
-  print("Available terminal buffers:")
-  for _, bufnr in ipairs(terminals) do
-    print(bufnr .. ": " .. vim.api.nvim_buf_get_name(bufnr))
-  end
-
-  -- Prompt the user for a buffer number
-  local term_bufnr = tonumber(vim.fn.input("Enter terminal buffer number: "))
-
-  -- Validate input and switch to selected buffer
-  if term_bufnr and vim.fn.bufexists(term_bufnr) == 1 then
-    vim.cmd("botright 10split | buffer " .. term_bufnr)
-  else
-    print("Invalid buffer number!")
-  end
-end
-
 -- Trouble.nvim keymaps (diagnostics viewer)
 vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>", { desc = "Toggle Trouble" })                              -- Toggle trouble panel
 vim.keymap.set("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", { desc = "Workspace Diagnostics" }) -- Show workspace diagnostics
@@ -196,8 +135,80 @@ vim.keymap.set("n", "<leader>pd", function() require("persistence").stop() end, 
 vim.keymap.set("n", "<leader>?", function() require("which-key").show({ global = false }) end,
   { desc = "Buffer Local Keymaps (which-key)" })
 
--- REMOVED MAPPINGS THAT OVERRIDE DEFAULT VIM NAVIGATION:
--- vim.keymap.set("n", "j", "jzz", opts)       -- Removed: This overrides default j movement
--- vim.keymap.set("n", "k", "kzz", opts)       -- Removed: This overrides default k movement
--- vim.keymap.set("n", "o", "o<Esc>", opts)    -- Removed: This prevents using 'o' for inserting new line and entering insert mode
--- vim.keymap.set("n", "O", "O<Esc>", opts)    -- Removed: This prevents using 'O' for inserting new line above and entering insert mode
+vim.api.nvim_set_keymap("n", "<leader>tt", ":lua PromptTerminalBuffer()<CR>", { noremap = true, silent = true })
+
+function PromptTerminalBuffer()
+  local terminals = {}
+  -- Find all terminal buffers and store their numbers
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    local bufname = vim.api.nvim_buf_get_name(bufnr)
+    if string.find(bufname, "term://") then
+      table.insert(terminals, bufnr)
+    end
+  end
+
+  if #terminals == 0 then
+    -- No terminals exist, create a new one
+    vim.cmd("botright 10split | term")
+    return
+  end
+
+  -- Display the list of terminal buffers
+  print("Available terminal buffers:")
+  for i, bufnr in ipairs(terminals) do
+    print(bufnr .. ": " .. vim.api.nvim_buf_get_name(bufnr))
+  end
+  print("N: Create a new terminal")
+
+  -- Prompt the user for a buffer number or 'N'
+  local input = vim.fn.input("Enter terminal buffer number or 'N' for new: ")
+
+  -- Check if user wants a new terminal
+  if input:upper() == "N" then
+    -- Check if there's an existing terminal window and close it
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      local buf = vim.api.nvim_win_get_buf(win)
+      local bufname = vim.api.nvim_buf_get_name(buf)
+      if string.find(bufname, "term://") then
+        vim.api.nvim_win_close(win, false)
+        break
+      end
+    end
+    -- Create a new terminal
+    vim.cmd("botright 10split | term")
+    return
+  end
+
+  -- Parse the buffer number
+  local term_bufnr = tonumber(input)
+
+  -- Validate input
+  if not term_bufnr or vim.fn.bufexists(term_bufnr) ~= 1 then
+    print("Invalid buffer number!")
+    return
+  end
+
+  -- Check if there's an existing terminal window and handle accordingly
+  local term_win = nil
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local bufname = vim.api.nvim_buf_get_name(buf)
+    if string.find(bufname, "term://") then
+      term_win = win
+      -- If this is the window with our selected buffer, just switch to it
+      if buf == term_bufnr then
+        vim.api.nvim_set_current_win(win)
+        return
+      end
+      break
+    end
+  end
+
+  -- If a different terminal window is open, close it before opening the new one
+  if term_win then
+    vim.api.nvim_win_close(term_win, false)
+  end
+
+  -- Open the selected terminal in a new split
+  vim.cmd("botright 10split | buffer " .. term_bufnr)
+end

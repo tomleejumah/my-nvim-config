@@ -299,25 +299,11 @@ local function setup_formatting()
     end,
   })
 end
-
--- Setup WakaTime
-local function setup_wakatime()
-  -- Make sure you have the WakaTime plugin installed
-  -- You can install it with your plugin manager
-  -- For example, with packer:
-  -- use { 'wakatime/vim-wakatime' }
-
-  -- WakaTime doesn't require any configuration in Lua
-  -- Just having the plugin installed is enough
-  -- It will automatically track your coding activity
-end
-
 -- Initialize everything
 local function setup()
   setup_lsp_servers()
   setup_completion()
   setup_formatting()
-  setup_wakatime()
 end
 
 setup()
