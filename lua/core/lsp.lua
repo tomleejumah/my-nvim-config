@@ -52,11 +52,11 @@ local function setup_lsp_servers()
       "gopls",
       "ts_ls",
       "lua_ls",
-      "jdtls",                  -- Java
+      -- "jdtls",                  -- Java
       "kotlin_language_server", -- Kotlin
       "intelephense",           -- PHP
       "pyright",                -- Python
-      "ruff",                   -- Python linter
+      -- "ruff,                   -- Python linter
       "clangd",                 -- C/C++
       "eslint",                 -- JavaScript/TypeScript linter
       "html",                   -- HTML

@@ -30,7 +30,7 @@ vim.keymap.set("n", "<leader>fg", ":Telescope live_grep<CR>", opts)  -- Find tex
 vim.keymap.set("n", "<leader>fb", ":Telescope buffers<CR>", opts)    -- Browse open buffers
 
 -- file explorer
-vim.keymap.set("n", "<leader>e", ":nvimtreetoggle<cr>", opts) -- toggle file explorer
+vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<cr>", opts) -- toggle file explorer
 
 -- buffer navigation
 vim.keymap.set("n", "<leader>bn", ":bnext<cr>", opts)     -- go to next buffer
@@ -135,6 +135,7 @@ vim.keymap.set("n", "<leader>pd", function() require("persistence").stop() end, 
 vim.keymap.set("n", "<leader>?", function() require("which-key").show({ global = false }) end,
   { desc = "Buffer Local Keymaps (which-key)" })
 
+--terminals (help for keybindings)
 vim.api.nvim_set_keymap("n", "<leader>tt", ":lua PromptTerminalBuffer()<CR>", { noremap = true, silent = true })
 
 function PromptTerminalBuffer()
@@ -159,6 +160,7 @@ function PromptTerminalBuffer()
     print(bufnr .. ": " .. vim.api.nvim_buf_get_name(bufnr))
   end
   print("N: Create a new terminal")
+  print("C: Close/minimise terminal")
 
   -- Prompt the user for a buffer number or 'N'
   local input = vim.fn.input("Enter terminal buffer number or 'N' for new: ")
@@ -176,6 +178,19 @@ function PromptTerminalBuffer()
     end
     -- Create a new terminal
     vim.cmd("botright 10split | term")
+    return
+  end
+
+  if input:upper() == "C" then
+    --close/minimise any open term session
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      local buf = vim.api.nvim_win_get_buf(win)
+      local bufname = vim.api.nvim_buf_get_name(buf)
+      if string.find(bufname, "term://") then
+        vim.api.nvim_win_close(win, true)
+        break
+      end
+    end
     return
   end
 
