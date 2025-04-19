@@ -34,9 +34,6 @@ vim.opt.guicursor = ""
 require("core.plugins")
 require("core.mappings")
 require("core.lsp")
-<<<<<<< HEAD
-require('core.terminal')
+-- require('core.terminal')
 --require('core.todo_highlights')
 --require("core.autosave")
-=======
->>>>>>> b37a8af (Initial commit)
