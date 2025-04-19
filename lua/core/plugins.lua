@@ -150,10 +150,32 @@ return require("lazy").setup({
   },
 
   -- Formatter
+<<<<<<< HEAD
   {
     "jose-elias-alvarez/null-ls.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
   },
+=======
+  -- {
+  --   "jose-elias-alvarez/null-ls.nvim",
+  --   dependencies = { "nvim-lua/plenary.nvim" },
+  -- },
+   
+{
+  "nvimtools/none-ls.nvim",
+  dependencies = { "nvim-lua/plenary.nvim" },
+  config = function()
+    local null_ls = require("null-ls")
+    null_ls.setup({
+      sources = {
+        null_ls.builtins.formatting.prettier,
+        null_ls.builtins.diagnostics.eslint,
+        -- add more as needed
+      },
+    })
+  end,
+},
+>>>>>>> b37a8af (Initial commit)
 
   {
     "glepnir/lspsaga.nvim",
