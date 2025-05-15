@@ -19,11 +19,11 @@ return require("lazy").setup({
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
   },
-  --Tabnine Autocompletion
-  {
-    "codota/tabnine-nvim",
-    build = "./dl_binaries.sh",
-  },
+  -- Tabnine Autocompletion
+  -- {
+  --   "codota/tabnine-nvim",
+  --   build = "./dl_binaries.sh",
+  -- },
 
   {
     "folke/todo-comments.nvim",
@@ -130,11 +130,13 @@ return require("lazy").setup({
 
   -- Theme
   {
-    "Shatur/neovim-ayu",
+    "Mofiqul/dracula.nvim",
     lazy = false,
     priority = 1000,
+    config = function()
+      vim.cmd.colorscheme("dracula")
+    end
   },
-
   -- Utilities
   {
     "windwp/nvim-autopairs",
@@ -147,22 +149,6 @@ return require("lazy").setup({
     config = function()
       require('Comment').setup()
     end
-  },
-
-  -- Formatter
-  {
-    "nvimtools/none-ls.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    config = function()
-      local null_ls = require("null-ls")
-      null_ls.setup({
-        sources = {
-          null_ls.builtins.formatting.prettier,
-          null_ls.builtins.diagnostics.eslint,
-          -- add more as needed
-        },
-      })
-    end,
   },
 
   {
@@ -218,12 +204,25 @@ return require("lazy").setup({
   },
 
   -- LSP Configuration
+  { "mfussenegger/nvim-jdtls" },
   {
     "neovim/nvim-lspconfig",
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "hrsh7th/cmp-nvim-lsp",
+      "WhoIsSethDaniel/mason-tool-installer.nvim"
     },
+  },
+  {
+    "jay-babu/mason-nvim-dap.nvim",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+    },
+    config = function()
+      require("mason-nvim-dap").setup({
+        ensure_installed = { "java-debug-adapter", "java-test" }
+      })
+    end
   }
 })

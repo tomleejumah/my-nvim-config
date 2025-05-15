@@ -9,13 +9,11 @@ vim.api.nvim_set_keymap('n', '<Down>', '<NOP>', { noremap = true, silent = true 
 vim.api.nvim_set_keymap('n', '<Left>', '<NOP>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Right>', '<NOP>', { noremap = true, silent = true })
 
---custom nvim-tree mappings
-vim.cmd([[
-    cabbrev NTT NvimTreeToggle
-    cabbrev NTF NvimTreeFocus
-    cabbrev NTC NvimTreeCollapse
-    cabbrev NTFF NvimTreeFindFile
-]])
+--Window Resize Custom
+vim.keymap.set("n", "<A-h>", "<C-w><")
+vim.keymap.set("n", "<A-l>", "<C-w>>")
+vim.keymap.set("n", "<A-k>", "<C-w>+")
+vim.keymap.set("n", "<A-j>", "<C-w>-")
 
 -- Toggle comments with Ctrl+/
 vim.keymap.set('n', '<C-_>', require('Comment.api').toggle.linewise.current, { desc = 'Toggle comment' })
@@ -59,12 +57,6 @@ vim.keymap.set("n", "<leader>sl", ":PersistedLoad<CR>", opts) -- Load session
 -- Visual Mode improvements
 vim.keymap.set("v", "<", "<gv", opts) -- Indent left and stay in visual mode
 vim.keymap.set("v", ">", ">gv", opts) -- Indent right and stay in visual mode
-
--- LSP keymaps
-vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)     -- Go to definition
-vim.keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)     -- Find references
-vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts) -- Go to implementation
-vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)                            -- Show documentation hover
 
 -- Window navigation (these don't override default vim navigation)
 vim.keymap.set("n", "<C-h>", "<C-w>h", opts) -- Move to left window
@@ -160,7 +152,7 @@ function PromptTerminalBuffer()
     print(bufnr .. ": " .. vim.api.nvim_buf_get_name(bufnr))
   end
   print("N: Create a new terminal")
-  print("C: Close/minimise terminal")
+  print("C: Minimise terminal")
 
   -- Prompt the user for a buffer number or 'N'
   local input = vim.fn.input("Enter terminal buffer number or 'N' for new: ")

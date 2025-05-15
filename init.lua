@@ -28,12 +28,13 @@ vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("data") .. "/undofiles"
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
--- Disable the cursor (for terminal mode)
 vim.opt.guicursor = ""
+
 -- Load core modules
 require("core.plugins")
 require("core.mappings")
 require("core.lsp")
+
 -- require('core.terminal')
 --require('core.todo_highlights')
 --require("core.autosave")

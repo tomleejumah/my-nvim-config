@@ -3,225 +3,257 @@ local lspconfig = require('lspconfig')
 
 -- LSP Attach Function with Keybindings
 local on_attach = function(client, bufnr)
-  -- Enable completion triggered by <c-x><c-o>
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
   -- Mappings
-  local bufopts = { noremap = true, silent = true, buffer = bufnr }
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+  vim.keymap.set("n", "gd", vim.lsp.buf.definition,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Go to definition" })
+  vim.keymap.set("n", "gD", vim.lsp.buf.declaration,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Go to declaration" })
+  vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references,
+    { buffer = bufnr, silent = true, noremap = true, desc = "List references" })
+  vim.keymap.set("n", "gt", vim.lsp.buf.type_definition,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Go to type definition" })
+  vim.keymap.set("n", "K", vim.lsp.buf.hover,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Show hover documentation" })
+  vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Show signature help" })
+  vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Code actions" })
+  vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Rename symbol" })
+  vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Add workspace folder" })
+  vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Remove workspace folder" })
+
+  -- Enable CodeLens refresh for servers that support it (e.g., jdtls)
+  if client.server_capabilities.codeLensProvider then
+    vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+      buffer = bufnr,
+      callback = vim.lsp.codelens.refresh,
+    })
+  end
 end
 
 -- Setup diagnostic signs
 local signs = { Error = "✗", Warn = "!", Hint = "➤", Info = "ℹ" }
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 
 -- Configure diagnostics
 vim.diagnostic.config({
   virtual_text = { prefix = "● " },
-  float = {
-    source = "always",
-    border = "rounded",
-  },
+  float = { source = "always", border = "rounded" },
   signs = true,
   underline = true,
   update_in_insert = false,
+  severity_sort = true,
 })
 
 -- Get LSP capabilities
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
--- Setup LSP servers
-local function setup_lsp_servers()
-  require("mason").setup()
-  require("mason-lspconfig").setup({
-    ensure_installed = {
-      "rust_analyzer",
-      "gopls",
-      "ts_ls",
-      "lua_ls",
-      -- "jdtls",                  -- Java
-      "kotlin_language_server", -- Kotlin
-      "intelephense",           -- PHP
-      "pyright",                -- Python
-      -- "ruff,                   -- Python linter
-      "clangd",                 -- C/C++
-      "eslint",                 -- JavaScript/TypeScript linter
-      "html",                   -- HTML
-      "cssls",                  -- CSS
-      "emmet_ls",               -- Emmet
+-- Enhanced JavaScript/TypeScript Configuration
+lspconfig.ts_ls.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
+  root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),
+  settings = {
+    javascript = {
+      inlayHints = {
+        includeInlayEnumMemberValueHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayParameterNameHints = "all",
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayVariableTypeHints = true,
+      },
     },
-  })
+    typescript = {
+      inlayHints = {
+        includeInlayEnumMemberValueHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayParameterNameHints = "all",
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayVariableTypeHints = true,
+      },
+    },
+  },
+})
 
-  -- Enhanced JavaScript/TypeScript Configuration
-  lspconfig.tsserver.setup({
+-- ESLint configuration
+lspconfig.eslint.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
+  root_dir = lspconfig.util.root_pattern(".eslintrc", ".eslintrc.js", ".eslintrc.json", "package.json", ".git"),
+})
+
+-- Enhanced Kotlin Configuration
+lspconfig.kotlin_language_server.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  root_dir = lspconfig.util.root_pattern("settings.gradle", "settings.gradle.kts", ".git"),
+  settings = {
+    kotlin = {
+      compiler = {
+        jvm = {
+          target = "17",
+        },
+      },
+    },
+  },
+})
+
+-- Java (jdtls) Configuration
+lspconfig.jdtls.setup({
+  cmd = {
+    (os.getenv("JAVA_HOME") or "/usr/lib/jvm/java-21-openjdk") .. "/bin/java",
+    '-Declipse.application=org.eclipse.jdt.ls.core.id1',
+    '-Dosgi.bundles.defaultStartLevel=4',
+    '-Declipse.product=org.eclipse.jdt.ls.core.product',
+    '-Dlog.protocol=true',
+    '-Dlog.level=ALL',
+    '-Xmx1g',
+    '--add-modules=ALL-SYSTEM',
+    '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+    '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+    '-javaagent:' .. (os.getenv("LOMBOK_JAR") or vim.fn.expand('~/.local/share/nvim/mason/packages/jdtls/lombok.jar')),
+    '-jar', vim.fn.glob(vim.fn.expand(
+    '~/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_*.jar')),
+    '-configuration', vim.fn.expand('~/.local/share/nvim/mason/packages/jdtls/config_linux'),
+    '-data', vim.fn.expand('~/.cache/jdtls-workspace/') .. vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t'),
+  },
+  root_dir = lspconfig.util.root_pattern('pom.xml', 'build.gradle', 'gradlew', 'mvnw', '.git'),
+  settings = {
+    java = {
+      referencesCodeLens = { enabled = true },
+      implementationsCodeLens = { enabled = true },
+      inlayHints = { parameterNames = { enabled = "all" } },
+      maven = { downloadSources = true },
+      references = { includeDecompiledSources = true },
+      format = { enabled = true },
+      completion = {
+        favoriteStaticMembers = {
+          "org.junit.Assert.*",
+          "org.junit.Assume.*",
+          "org.junit.jupiter.api.Assertions.*",
+          "java.util.Objects.requireNonNull",
+          "java.util.Objects.requireNonNullElse",
+        },
+        importOrder = { "java", "javax", "com", "org" },
+      },
+      configuration = {
+        runtimes = {
+          { name = "JavaSE-17", path = "/usr/lib/jvm/java-17-openjdk", default = true },
+          { name = "JavaSE-21", path = "/usr/lib/jvm/java-21-openjdk" },
+        },
+      },
+    },
+  },
+  init_options = { bundles = {} },
+  on_attach = on_attach,
+  capabilities = capabilities,
+})
+
+-- Python
+lspconfig.pyright.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  settings = {
+    python = {
+      analysis = {
+        autoSearchPaths = true,
+        diagnosticMode = "workspace",
+        useLibraryCodeForTypes = true,
+      },
+    },
+  },
+})
+
+lspconfig.ruff.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  root_dir = lspconfig.util.root_pattern("pyproject.toml", "ruff.toml", ".git"),
+})
+
+-- Go
+lspconfig.gopls.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  settings = {
+    gopls = {
+      analyses = { unusedparams = true },
+      staticcheck = true,
+      gofumpt = true,
+    },
+  },
+})
+
+-- Web Development
+lspconfig.html.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+})
+
+lspconfig.cssls.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+})
+
+lspconfig.emmet_ls.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = { "html", "css", "javascriptreact", "typescriptreact" },
+})
+
+-- Rust
+require("rust-tools").setup({
+  server = {
     on_attach = on_attach,
     capabilities = capabilities,
-    filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
-    root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),
     settings = {
-      javascript = {
-        inlayHints = {
-          includeInlayEnumMemberValueHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayParameterNameHints = "all",
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayVariableTypeHints = true,
-        },
-      },
-      typescript = {
-        inlayHints = {
-          includeInlayEnumMemberValueHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayParameterNameHints = "all",
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayVariableTypeHints = true,
-        },
+      ["rust-analyzer"] = {
+        checkOnSave = { command = "clippy" },
+        imports = { granularity = { group = "module" }, prefix = "self" },
       },
     },
-  })
+  },
+})
 
-  -- ESLint configuration
-  lspconfig.eslint.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
-  })
+-- C/C++
+lspconfig.clangd.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = {
+    "clangd",
+    "--background-index",
+    "--suggest-missing-includes",
+    "--clang-tidy",
+    "--header-insertion=iwyu",
+  },
+})
 
-  -- Enhanced Kotlin Configuration
-  lspconfig.kotlin_language_server.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    root_dir = lspconfig.util.root_pattern("settings.gradle", "settings.gradle.kts", ".git"),
-    settings = {
-      kotlin = {
-        compiler = {
-          jvm = {
-            target = "17"
-          }
-        }
-      }
-    }
-  })
+-- PHP
+lspconfig.intelephense.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  root_dir = lspconfig.util.root_pattern("composer.json", ".git"),
+})
 
-  -- Java configuration
-  lspconfig.jdtls.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    root_dir = lspconfig.util.root_pattern('pom.xml', 'gradle.build', 'build.gradle', '.git'),
-  })
-
-  -- Python
-  lspconfig.pyright.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    settings = {
-      python = {
-        analysis = {
-          autoSearchPaths = true,
-          diagnosticMode = "workspace",
-          useLibraryCodeForTypes = true,
-        },
-      },
+-- Lua
+lspconfig.lua_ls.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  settings = {
+    Lua = {
+      diagnostics = { globals = { "vim" } },
     },
-  })
-
-  lspconfig.ruff.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-  })
-
-  -- Go
-  lspconfig.gopls.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    settings = {
-      gopls = {
-        analyses = {
-          unusedparams = true,
-        },
-        staticcheck = true,
-        gofumpt = true,
-      },
-    },
-  })
-
-  -- Web Development
-  lspconfig.html.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-  })
-
-  lspconfig.cssls.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-  })
-
-  lspconfig.emmet_ls.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-  })
-
-  -- Rust
-  require("rust-tools").setup({
-    server = {
-      on_attach = on_attach,
-      capabilities = capabilities,
-      settings = {
-        ["rust-analyzer"] = {
-          checkOnSave = {
-            command = "clippy",
-          },
-          imports = {
-            granularity = {
-              group = "module",
-            },
-            prefix = "self",
-          },
-        },
-      },
-    },
-  })
-
-  -- C/C++
-  lspconfig.clangd.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    cmd = {
-      "clangd",
-      "--background-index",
-      "--suggest-missing-includes",
-      "--clang-tidy",
-      "--header-insertion=iwyu",
-    },
-  })
-
-  -- PHP
-  lspconfig.intelephense.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-  })
-
-  -- Lua
-  lspconfig.lua_ls.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-  })
-end
+  },
+})
 
 -- Setup nvim-cmp
 local function setup_completion()
@@ -240,10 +272,18 @@ local function setup_completion()
       ["<C-Space>"] = cmp.mapping.complete(),
       ["<C-e>"] = cmp.mapping.abort(),
       ["<CR>"] = cmp.mapping.confirm({ select = true }),
+      ["<Tab>"] = cmp.mapping(function(fallback)
+        if luasnip.expand_or_jumpable() then
+          luasnip.expand_or_jump()
+        else
+          fallback()
+        end
+      end, { "i", "s" }),
     }),
     sources = cmp.config.sources({
       { name = "nvim_lsp" },
       { name = "luasnip" },
+      { name = "path" },
     }, {
       { name = "buffer" },
     }),
@@ -252,7 +292,6 @@ end
 
 -- Setup format on save
 local function setup_formatting()
-  -- Setup conform.nvim
   require("conform").setup({
     formatters_by_ft = {
       lua = { "stylua" },
@@ -276,32 +315,10 @@ local function setup_formatting()
       lsp_fallback = true,
     },
   })
-
-  -- Setup null-ls for additional formatting capabilities
-  local null_ls = require("null-ls")
-  null_ls.setup({
-    sources = {
-      null_ls.builtins.formatting.prettier,     -- JavaScript/TypeScript
-      null_ls.builtins.formatting.gofmt,        -- Go
-      null_ls.builtins.formatting.rustfmt,      -- Rust
-      null_ls.builtins.formatting.stylua,       -- Lua
-      null_ls.builtins.formatting.black,        -- Python
-      null_ls.builtins.formatting.phpcsfixer,   -- PHP
-      null_ls.builtins.formatting.clang_format, -- C/C++
-    },
-  })
-
-  -- Set up format on save for specific file types
-  vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = { "*.c", "*.cpp", "*.h", "*.rs", "*.go", "*.ts", "*.tsx", "*.js", "*.jsx", "*.py", "*.html", "*.css", "*.java", "*.kt", "*.php" },
-    callback = function()
-      vim.lsp.buf.format({ async = false })
-    end,
-  })
 end
+
 -- Initialize everything
 local function setup()
-  setup_lsp_servers()
   setup_completion()
   setup_formatting()
 end
