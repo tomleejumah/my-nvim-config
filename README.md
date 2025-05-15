@@ -1,27 +1,9 @@
 ## Java (jdtls) Configuration for cross-platform
-<<<<<<< HEAD
-This section configures the `jdtls` (Java Development Tools Language Server.Modify /lua/core/lsp.lua) for Neovim, providing robust Java support with features like code completion, navigation, CodeLens, inlay hints, and formatting. The configuration is cross-platform, supporting Windows, macOS, and Linux, with dynamic path detection for Java installations and Lombok.
+
+Guidance to configure the `jdtls` (Java Development Tools Language Server) to support cross-platform. This setup supports features like code completion, navigation, CodeLens, inlay hints, and formatting. The configuration supports Windows, macOS, and Linux, with dynamic path detection.
 
 ### Configuration
-
-### Prerequisites and Setup Instructions
-
--- Prerequisites
--- Neovim: Version 0.9.x or higher.
--- Plugins: neovim/nvim-lspconfig, williamboman/mason.nvim, hrsh7th/cmp-nvim-lsp.
--- Java: JDK 21 (recommended) and optionally JDK 17 installed.
--- Environment Variables (optional):
---   JAVA_HOME: Path to JDK 21.
---   JAVA_17_HOME, JAVA_21_HOME: Paths to specific JDKs.
---   LOMBOK_JAR: Path to Lombok JAR if not using Mason’s default.
-
--- Setup Instructions
--- Ensure mason.nvim is configured to install jdtls:
-require("mason-lspconfig").setup({ ensure_installed = { "jdtls" } })
-=======
-Guidance to configure the `jdtls` (Java Development Tools Language Server to support cross-platform. This setup supports features like code completion, navigation, CodeLens, inlay hints, and formatting. The configuration, supports Windows, macOS, and Linux, with dynamic path detection.
-### Configuration
- **Modify the following file /lua/core/lsp.lua)**
+**Modify the following file `/lua/core/lsp.lua`**
 
 ### Prerequisites and Setup Instructions
 
@@ -47,7 +29,6 @@ Guidance to configure the `jdtls` (Java Development Tools Language Server to sup
 require("mason-lspconfig").setup({
   ensure_installed = { "jdtls" }
 })
->>>>>>> 9b1dfaa (added java lsp support)
 
 ```lua
 -- Java (jdtls) Configuration
