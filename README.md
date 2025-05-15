@@ -1,4 +1,5 @@
 ## Java (jdtls) Configuration for cross-platform
+<<<<<<< HEAD
 This section configures the `jdtls` (Java Development Tools Language Server.Modify /lua/core/lsp.lua) for Neovim, providing robust Java support with features like code completion, navigation, CodeLens, inlay hints, and formatting. The configuration is cross-platform, supporting Windows, macOS, and Linux, with dynamic path detection for Java installations and Lombok.
 
 ### Configuration
@@ -17,6 +18,36 @@ This section configures the `jdtls` (Java Development Tools Language Server.Modi
 -- Setup Instructions
 -- Ensure mason.nvim is configured to install jdtls:
 require("mason-lspconfig").setup({ ensure_installed = { "jdtls" } })
+=======
+Guidance to configure the `jdtls` (Java Development Tools Language Server to support cross-platform. This setup supports features like code completion, navigation, CodeLens, inlay hints, and formatting. The configuration, supports Windows, macOS, and Linux, with dynamic path detection.
+### Configuration
+ **Modify the following file /lua/core/lsp.lua)**
+
+### Prerequisites and Setup Instructions
+
+- **Neovim**: Version 0.9.x or higher  
+- **Plugins**:  
+  - neovim/nvim-lspconfig  
+  - williamboman/mason.nvim  
+  - hrsh7th/cmp-nvim-lsp  
+- **Java**:  
+  - JDK 21 (recommended)  
+  - Optionally JDK 17  
+- **Environment Variables** (optional):  
+  - JAVA_HOME: Path to JDK 21  
+  - JAVA_17_HOME: Path to JDK 17  
+  - JAVA_21_HOME: Path to JDK 21  
+  - LOMBOK_JAR: Path to Lombok JAR (if not using Mason’s default)  
+
+## ⚙️ Setup Instructions
+
+- Ensure mason.nvim is configured to install jdtls:
+
+```lua
+require("mason-lspconfig").setup({
+  ensure_installed = { "jdtls" }
+})
+>>>>>>> 9b1dfaa (added java lsp support)
 
 ```lua
 -- Java (jdtls) Configuration
