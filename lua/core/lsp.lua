@@ -16,6 +16,8 @@ local on_attach = function(client, bufnr)
     { buffer = bufnr, silent = true, noremap = true, desc = "Show hover documentation" })
   vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help,
     { buffer = bufnr, silent = true, noremap = true, desc = "Show signature help" })
+  vim.keymap.set("i", "<C-p>", vim.lsp.buf.signature_help,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Show signature help" })
   vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action,
     { buffer = bufnr, silent = true, noremap = true, desc = "Code actions" })
   vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename,
@@ -24,15 +26,27 @@ local on_attach = function(client, bufnr)
     { buffer = bufnr, silent = true, noremap = true, desc = "Add workspace folder" })
   vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder,
     { buffer = bufnr, silent = true, noremap = true, desc = "Remove workspace folder" })
+  vim.keymap.set("n", "<leader>cl", vim.lsp.codelens.run,
+    { buffer = bufnr, silent = true, noremap = true, desc = "Run CodeLens action" })
 
-  -- Enable CodeLens refresh for servers that support it (e.g., jdtls)
-  if client.server_capabilities.codeLensProvider then
-    vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-      buffer = bufnr,
-      callback = vim.lsp.codelens.refresh,
-    })
-  end
+  -- Always enable and refresh CodeLens for all language servers
+  -- This will refresh CodeLens even for servers that don't explicitly declare support
+  vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+    buffer = bufnr,
+    callback = function()
+      if client.server_capabilities.codeLensProvider then
+        vim.lsp.codelens.refresh()
+      end
+    end,
+  })
 end
+
+-- Set up custom CodeLens styling (VS Code/JetBrains style)
+vim.api.nvim_set_hl(0, "LspCodeLens", { fg = "#777777", italic = true })
+vim.api.nvim_set_hl(0, "LspCodeLensText", { fg = "#777777", italic = true })
+vim.api.nvim_set_hl(0, "LspCodeLensRefText", { fg = "#777777", italic = true })
+vim.api.nvim_set_hl(0, "LspCodeLensRefIcon", { fg = "#777777", italic = true })
+vim.api.nvim_set_hl(0, "LspCodeLensSeparator", { fg = "#777777", italic = true })
 
 -- Setup diagnostic signs
 local signs = { Error = "✗", Warn = "!", Hint = "➤", Info = "ℹ" }
@@ -51,8 +65,12 @@ vim.diagnostic.config({
   severity_sort = true,
 })
 
--- Get LSP capabilities
+-- Get LSP capabilities with CodeLens explicitly enabled
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
+capabilities.textDocument.codeLens = { dynamicRegistration = false }
+
+-- Enable global CodeLens
+vim.g.codelens_enabled = true
 
 -- Enhanced JavaScript/TypeScript Configuration
 lspconfig.ts_ls.setup({
@@ -104,6 +122,9 @@ lspconfig.kotlin_language_server.setup({
           target = "17",
         },
       },
+      inlayHints = { enable = true },
+      references = { includeDecompiledSources = true },
+      codeLens = { enable = true },
     },
   },
 })
@@ -189,6 +210,16 @@ lspconfig.gopls.setup({
       analyses = { unusedparams = true },
       staticcheck = true,
       gofumpt = true,
+      codelenses = {
+        gc_details = true,
+        generate = true,
+        regenerate_cgo = true,
+        run_govulncheck = true,
+        test = true,
+        tidy = true,
+        upgrade_dependency = true,
+        vendor = true,
+      },
     },
   },
 })
@@ -219,6 +250,12 @@ require("rust-tools").setup({
       ["rust-analyzer"] = {
         checkOnSave = { command = "clippy" },
         imports = { granularity = { group = "module" }, prefix = "self" },
+        lens = {
+          enable = true,
+          methodReferences = true,
+          references = true,
+          implementations = true,
+        },
       },
     },
   },
@@ -242,6 +279,13 @@ lspconfig.intelephense.setup({
   on_attach = on_attach,
   capabilities = capabilities,
   root_dir = lspconfig.util.root_pattern("composer.json", ".git"),
+  settings = {
+    intelephense = {
+      references = { includeDecompiledSources = true },
+      telemetry = { enabled = false },
+      codeLens = { enable = true },
+    },
+  },
 })
 
 -- Lua
@@ -251,6 +295,7 @@ lspconfig.lua_ls.setup({
   settings = {
     Lua = {
       diagnostics = { globals = { "vim" } },
+      codeLens = { enable = true },
     },
   },
 })
@@ -308,6 +353,7 @@ local function setup_formatting()
       c = { "clang-format" },
       cpp = { "clang-format" },
       html = { "prettier" },
+      xml = { "xmllint", "prettier" },
       css = { "prettier" },
     },
     format_on_save = {
@@ -317,10 +363,37 @@ local function setup_formatting()
   })
 end
 
+-- Function to setup CodeLens commands
+local function setup_codelens_commands()
+  -- Setup global autocommand for CodeLens refresh
+  vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "CursorHold" }, {
+    pattern = "*",
+    callback = function()
+      vim.lsp.codelens.refresh()
+    end,
+  })
+
+  -- Enable CodeLens auto-refresh when cursor is moved
+  vim.api.nvim_create_autocmd("CursorMoved", {
+    pattern = "*",
+    callback = function()
+      local bufnr = vim.api.nvim_get_current_buf()
+      for _, client in pairs(vim.lsp.get_active_clients({ bufnr = bufnr })) do
+        if client.server_capabilities.codeLensProvider then
+          vim.lsp.codelens.refresh()
+          break
+        end
+      end
+    end,
+    desc = "Auto-refresh CodeLens when cursor is moved",
+  })
+end
+
 -- Initialize everything
 local function setup()
   setup_completion()
   setup_formatting()
+  setup_codelens_commands()
 end
 
 setup()

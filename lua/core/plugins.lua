@@ -19,11 +19,6 @@ return require("lazy").setup({
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
   },
-  -- Tabnine Autocompletion
-  -- {
-  --   "codota/tabnine-nvim",
-  --   build = "./dl_binaries.sh",
-  -- },
 
   {
     "folke/todo-comments.nvim",

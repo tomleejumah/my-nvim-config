@@ -127,6 +127,8 @@ vim.keymap.set("n", "<leader>pd", function() require("persistence").stop() end, 
 vim.keymap.set("n", "<leader>?", function() require("which-key").show({ global = false }) end,
   { desc = "Buffer Local Keymaps (which-key)" })
 
+-- In your Neovim config (init.lua or equivalent)
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { noremap = true })
 --terminals (help for keybindings)
 vim.api.nvim_set_keymap("n", "<leader>tt", ":lua PromptTerminalBuffer()<CR>", { noremap = true, silent = true })
 

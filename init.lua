@@ -30,6 +30,19 @@ vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
 vim.opt.guicursor = ""
 
+vim.opt.mouse = ""
+vim.api.nvim_create_autocmd("TermEnter", {
+  callback = function()
+    vim.opt.guicursor = "a:ver25"
+  end,
+})
+
+vim.api.nvim_create_autocmd("TermLeave", {
+  callback = function()
+    vim.opt.guicursor = ""
+  end,
+})
+
 -- Load core modules
 require("core.plugins")
 require("core.mappings")
