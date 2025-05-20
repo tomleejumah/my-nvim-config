@@ -1,8 +1,7 @@
 ## Java (jdtls) Configuration for cross-platform
 
-Guidance to configure the `jdtls` (Java Development Tools Language Server) to support cross-platform. This setup supports features like code completion, navigation, CodeLens, inlay hints, and formatting. The configuration supports Windows, macOS, and Linux, with dynamic path detection.
+The Current setup is configured to work with arch and Debian distros.To configure support for Windows, macOS, and Linux, with dynamic path detection, Use the following Guidance to configure the `jdtls` (Java Development Tools Language Server). This setup supports features like code completion, navigation, CodeLens, inlay hints, and formatting.
 
-### Configuration
 **Modify the following file `/lua/core/lsp.lua`**
 
 ### Prerequisites and Setup Instructions
