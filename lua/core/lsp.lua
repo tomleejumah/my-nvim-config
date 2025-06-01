@@ -378,7 +378,7 @@ local function setup_codelens_commands()
     pattern = "*",
     callback = function()
       local bufnr = vim.api.nvim_get_current_buf()
-      for _, client in pairs(vim.lsp.get_active_clients({ bufnr = bufnr })) do
+      for _, client in pairs(vim.lsp.get_clients({ bufnr = bufnr })) do
         if client.server_capabilities.codeLensProvider then
           vim.lsp.codelens.refresh()
           break
