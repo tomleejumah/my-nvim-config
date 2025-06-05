@@ -47,6 +47,7 @@ vim.api.nvim_create_autocmd("TermLeave", {
 require("core.plugins")
 require("core.mappings")
 require("core.lsp")
+require("core.boilerplate")
 
 -- require('core.terminal')
 --require('core.todo_highlights')

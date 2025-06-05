@@ -335,7 +335,7 @@ local function setup_completion()
   })
 end
 
--- Setup format on save
+-- Setup format on leaving insert mode
 local function setup_formatting()
   require("conform").setup({
     formatters_by_ft = {
@@ -356,10 +356,20 @@ local function setup_formatting()
       xml = { "xmllint", "prettier" },
       css = { "prettier" },
     },
-    format_on_save = {
-      timeout_ms = 500,
-      lsp_fallback = true,
+    format_on_save = false, -- disable save-based formatting
+  })
+
+  -- Format on InsertLeave
+  vim.api.nvim_create_autocmd("InsertLeave", {
+    pattern = {
+      "*.lua", "*.js", "*.ts", "*.tsx", "*.jsx",
+      "*.html", "*.css", "*.java", "*.kt",
+      "*.php", "*.py", "*.rs", "*.go",
+      "*.c", "*.cpp", "*.xml"
     },
+    callback = function()
+      require("conform").format({ bufnr = 0, async = true })
+    end,
   })
 end
 
@@ -394,6 +404,7 @@ local function setup()
   setup_completion()
   setup_formatting()
   setup_codelens_commands()
+  -- setup_android_intergration()
 end
 
 setup()

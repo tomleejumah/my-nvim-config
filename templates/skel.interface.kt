@@ -1,0 +1,5 @@
+package %PACKAGE%
+
+interface %CLASSNAME% {
+    
+}

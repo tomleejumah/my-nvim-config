@@ -145,7 +145,18 @@ return require("lazy").setup({
       require('Comment').setup()
     end
   },
+  --GPT
+  {
+    "robitx/gp.nvim",
+    config = function()
+      local conf = {
+        -- For customization, refer to Install > Configuration in the Documentation/Readme
+      }
+      require("gp").setup(conf)
 
+      -- Setup shortcuts here (see Usage > Shortcuts in the Documentation/Readme)
+    end,
+  },
   {
     "glepnir/lspsaga.nvim",
   },
@@ -158,11 +169,10 @@ return require("lazy").setup({
     build = function()
       vim.fn["mkdp#util#install"]()
     end,
-    opts = {
-      mkdp_auto_start = 1,
-    },
+    config = function()
+      vim.g.mkdp_auto_start = 1
+    end,
   },
-
   -- Wakatime
   { "wakatime/vim-wakatime" },
 

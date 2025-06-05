@@ -16,7 +16,8 @@ vim.keymap.set("n", "<A-k>", "<C-w>+")
 vim.keymap.set("n", "<A-j>", "<C-w>-")
 
 -- Toggle comments with Ctrl+/
-vim.keymap.set('n', '<C-_>', require('Comment.api').toggle.linewise.current, { desc = 'Toggle comment' })
+vim.keymap.set('n', '<C-_>', function() require('Comment.api').toggle.linewise.current() vim.cmd('normal! j') -- move cursor down after commenting
+end, { desc = 'Toggle comment and move down' })
 vim.keymap.set('v', '<C-_>', '<ESC><cmd>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>',
   { desc = 'Toggle comment' })
 
@@ -117,11 +118,26 @@ vim.keymap.set("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", { desc = "Lo
 vim.keymap.set("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", { desc = "Quickfix List" })                      -- Show quickfix list
 vim.keymap.set("n", "gR", "<cmd>TroubleToggle lsp_references<cr>", { desc = "LSP References" })                       -- Show LSP references in Trouble
 
+
+--persistance yank
+vim.keymap.set("x", "<leader>p", [["_dP]], { noremap = true, silent = true })
+
 -- Persistence.nvim keymaps (session management)
-vim.keymap.set("n", "<leader>ps", function() require("persistence").load() end, { desc = "Restore Session" })            -- Restore session
-vim.keymap.set("n", "<leader>pl", function() require("persistence").load({ last = true }) end,
-  { desc = "Restore Last Session" })                                                                                     -- Restore last session
-vim.keymap.set("n", "<leader>pd", function() require("persistence").stop() end, { desc = "Don't Save Current Session" }) -- Don't save session
+
+-- Restore session
+vim.keymap.set("n", "<C-p>s", function()
+  require("persistence").load()
+end, { desc = "Restore Session" })
+
+-- Restore last session
+vim.keymap.set("n", "<C-p>l", function()
+  require("persistence").load({ last = true })
+end, { desc = "Restore Last Session" })
+
+-- Don't save current session
+vim.keymap.set("n", "<C-p>d", function()
+  require("persistence").stop()
+end, { desc = "Don't Save Current Session" })
 
 -- Which-key keymaps (help for keybindings)
 vim.keymap.set("n", "<leader>?", function() require("which-key").show({ global = false }) end,

@@ -1,0 +1,5 @@
+package %PACKAGE%
+
+object %CLASSNAME% {
+    
+}
