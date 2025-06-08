@@ -8,7 +8,7 @@ require('gitsigns').setup({
     changedelete = { text = '┃' },
   },
 })
- vim.api.nvim_set_hl(0, 'SignColumn', { bg = 'none' }) 
+ vim.api.nvim_set_hl(0, 'SignColumn', { bg = 'none' })
 -- Customize highlight groups for the git signs
 vim.api.nvim_set_hl(0, "GitSignsAdd", { fg = "#00f746" })      -- Green for added lines
 vim.api.nvim_set_hl(0, "GitSignsChange", { fg = "#e0cb07" })   -- Yellow for changed lines
