@@ -1,6 +1,8 @@
 -- Define leader key before loading any plugins
 vim.g.mapleader = " "
 
+vim.env.JAVA_HOME = "/usr/lib/jvm/java-21-openjdk"
+
 -- General settings
 vim.opt.cursorline = true
 vim.opt.number = true
@@ -32,15 +34,15 @@ vim.opt.guicursor = ""
 
 vim.opt.mouse = ""
 vim.api.nvim_create_autocmd("TermEnter", {
-  callback = function()
-    vim.opt.guicursor = "a:ver25"
-  end,
+	callback = function()
+		vim.opt.guicursor = "a:ver25"
+	end,
 })
 
 vim.api.nvim_create_autocmd("TermLeave", {
-  callback = function()
-    vim.opt.guicursor = ""
-  end,
+	callback = function()
+		vim.opt.guicursor = ""
+	end,
 })
 
 -- Load core modules
