@@ -151,12 +151,13 @@ lspconfig.ts_ls.setup({
 })
 
 -- ESLint configuration
-lspconfig.eslint.setup({
+--[[ lspconfig.eslint.setup({
 	on_attach = on_attach,
 	capabilities = capabilities,
 	filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
 	root_dir = lspconfig.util.root_pattern(".eslintrc", ".eslintrc.js", ".eslintrc.json", "package.json", ".git"),
 })
+]]
 
 -- Enhanced Kotlin Configuration
 lspconfig.kotlin_language_server.setup({
