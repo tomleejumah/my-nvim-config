@@ -19,7 +19,13 @@ return require("lazy").setup({
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 	},
-
+	--Context
+	{
+		"nvim-treesitter/nvim-treesitter-context",
+		event = "VeryLazy",
+		config = false,
+	},
+	--  Comment
 	{
 		"folke/todo-comments.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
