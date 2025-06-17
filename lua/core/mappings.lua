@@ -1,4 +1,4 @@
---
+local opts = { noremap = true, silent = true }
 
 --Mappings for TodoLocList
 vim.api.nvim_set_keymap("n", "<leader>td", ":TodoLocList<CR>", { noremap = true, silent = true })
@@ -140,94 +140,12 @@ end, { desc = "Buffer Local Keymaps (which-key)" })
 -- In your Neovim config (init.lua or equivalent)
 vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { noremap = true })
 --terminals (help for keybindings)
-vim.api.nvim_set_keymap("n", "<leader>tt", ":lua PromptTerminalBuffer()<CR>", { noremap = true, silent = true })
+local term_manager = require("core.term_manager")
 
-function PromptTerminalBuffer()
-	local terminals = {}
-	-- Find all terminal buffers and store their numbers
-	for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-		local bufname = vim.api.nvim_buf_get_name(bufnr)
-		if string.find(bufname, "term://") then
-			table.insert(terminals, bufnr)
-		end
-	end
+ vim.keymap.set("n", "<leader>tt", term_manager.prompt_terminal, { noremap = true, silent = true })
 
-	if #terminals == 0 then
-		-- No terminals exist, create a new one
-		vim.cmd("botright 10split | term")
-		return
-	end
-
-	-- Display the list of terminal buffers
-	print("Available terminal buffers:")
-	for i, bufnr in ipairs(terminals) do
-		print(bufnr .. ": " .. vim.api.nvim_buf_get_name(bufnr))
-	end
-	print("N: Create a new terminal")
-	print("C: Minimise terminal")
-
-	-- Prompt the user for a buffer number or 'N'
-	local input = vim.fn.input("Enter terminal buffer number or 'N' for new: ")
-
-	-- Check if user wants a new terminal
-	if input:upper() == "N" then
-		-- Check if there's an existing terminal window and close it
-		for _, win in ipairs(vim.api.nvim_list_wins()) do
-			local buf = vim.api.nvim_win_get_buf(win)
-			local bufname = vim.api.nvim_buf_get_name(buf)
-			if string.find(bufname, "term://") then
-				vim.api.nvim_win_close(win, false)
-				break
-			end
-		end
-		-- Create a new terminal
-		vim.cmd("botright 10split | term")
-		return
-	end
-
-	if input:upper() == "C" then
-		--close/minimise any open term session
-		for _, win in ipairs(vim.api.nvim_list_wins()) do
-			local buf = vim.api.nvim_win_get_buf(win)
-			local bufname = vim.api.nvim_buf_get_name(buf)
-			if string.find(bufname, "term://") then
-				vim.api.nvim_win_close(win, true)
-				break
-			end
-		end
-		return
-	end
-
-	-- Parse the buffer number
-	local term_bufnr = tonumber(input)
-
-	-- Validate input
-	if not term_bufnr or vim.fn.bufexists(term_bufnr) ~= 1 then
-		print("Invalid buffer number!")
-		return
-	end
-
-	-- Check if there's an existing terminal window and handle accordingly
-	local term_win = nil
-	for _, win in ipairs(vim.api.nvim_list_wins()) do
-		local buf = vim.api.nvim_win_get_buf(win)
-		local bufname = vim.api.nvim_buf_get_name(buf)
-		if string.find(bufname, "term://") then
-			term_win = win
-			-- If this is the window with our selected buffer, just switch to it
-			if buf == term_bufnr then
-				vim.api.nvim_set_current_win(win)
-				return
-			end
-			break
-		end
-	end
-
-	-- If a different terminal window is open, close it before opening the new one
-	if term_win then
-		vim.api.nvim_win_close(term_win, false)
-	end
-
-	-- Open the selected terminal in a new split
-	vim.cmd("botright 10split | buffer " .. term_bufnr)
-end
+-- ESC in terminal mode → exit + focus NvimTree
+vim.keymap.set("t", "<Esc>", function()
+	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), "n", false)
+	vim.defer_fn(term_manager.focus_nvim_tree, 100)
+end, { noremap = true, silent = true })
