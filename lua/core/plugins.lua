@@ -107,6 +107,14 @@ return require("lazy").setup({
 	},
 
 	{
+		"akinsho/git-conflict.nvim",
+		version = "*",
+		config = function()
+			require("git-conflict") -- path to your config file
+		end,
+	},
+
+	{
 		"tpope/vim-fugitive",
 	},
 
