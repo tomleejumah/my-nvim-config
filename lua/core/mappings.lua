@@ -25,10 +25,22 @@ vim.keymap.set("n", "<leader>fb", ":Telescope buffers<CR>", opts) -- Browse open
 -- file explorer
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<cr>", opts) -- toggle file explorer
 
--- buffer navigation
-vim.keymap.set("n", "<leader>bn", ":bnext<cr>", opts) -- go to next buffer
+-- buffer navigation updated
+--[[ vim.keymap.set("n", "<leader>bn", ":bnext<cr>", opts) -- go to next buffer
 vim.keymap.set("n", "<leader>bp", ":bprevious<cr>", opts) -- go to previous buffer
-vim.keymap.set("n", "<leader>bd", ":bdelete<cr>", opts) -- delete current buffer
+vim.keymap.set("n", "<leader>bd", ":bdelete<cr>", opts) -- delete current buffer ]]
+
+local function safe_buffer_nav(cmd)
+	return function()
+		if vim.bo.buftype ~= "terminal" then
+			vim.cmd(cmd)
+		end
+	end
+end
+
+vim.keymap.set("n", "<C-n>", safe_buffer_nav("bnext"), { desc = "Next buffer", silent = true })
+vim.keymap.set("n", "<C-p>", safe_buffer_nav("bprevious"), { desc = "Previous buffer", silent = true })
+vim.keymap.set("n", "<C-l>", safe_buffer_nav("ls"), { desc = "List buffers", silent = true })
 
 -- File operations shortcuts
 vim.keymap.set("n", "<leader>w", ":w<CR>", opts) -- Save file
@@ -142,7 +154,7 @@ vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { noremap = true })
 --terminals (help for keybindings)
 local term_manager = require("core.term_manager")
 
- vim.keymap.set("n", "<leader>tt", term_manager.prompt_terminal, { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>tt", term_manager.prompt_terminal, { noremap = true, silent = true })
 
 -- ESC in terminal mode → exit + focus NvimTree
 vim.keymap.set("t", "<Esc>", function()

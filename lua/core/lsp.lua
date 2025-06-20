@@ -1,5 +1,6 @@
 -- LSP Configuration
-local lspconfig = require("lspconfig")
+vim = vim
+lspconfig = require("lspconfig")
 
 -- LSP Attach Function with Keybindings
 local on_attach = function(client, bufnr)
@@ -87,20 +88,6 @@ local on_attach = function(client, bufnr)
 			end
 		end,
 	})
-end
-
--- Set up custom CodeLens styling (VS Code/JetBrains style)
-vim.api.nvim_set_hl(0, "LspCodeLens", { fg = "#777777", italic = true })
-vim.api.nvim_set_hl(0, "LspCodeLensText", { fg = "#777777", italic = true })
-vim.api.nvim_set_hl(0, "LspCodeLensRefText", { fg = "#777777", italic = true })
-vim.api.nvim_set_hl(0, "LspCodeLensRefIcon", { fg = "#777777", italic = true })
-vim.api.nvim_set_hl(0, "LspCodeLensSeparator", { fg = "#777777", italic = true })
-
--- Setup diagnostic signs
-local signs = { Error = "●", Warn = "!", Hint = "󰛩", Info = "➤" }
-for type, icon in pairs(signs) do
-	local hl = "DiagnosticSign" .. type
-	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 
 -- Configure diagnostics
@@ -346,13 +333,19 @@ lspconfig.intelephense.setup({
 })
 
 -- Lua
-lspconfig.lua_ls.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
+require("lspconfig").lua_ls.setup({
 	settings = {
 		Lua = {
-			diagnostics = { globals = { "vim" } },
-			codeLens = { enable = true },
+			diagnostics = {
+				globals = { "vim" },
+			},
+			workspace = {
+				library = vim.api.nvim_get_runtime_file("", true),
+				checkThirdParty = false,
+			},
+			telemetry = {
+				enable = false,
+			},
 		},
 	},
 })

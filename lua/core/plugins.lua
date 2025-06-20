@@ -142,6 +142,13 @@ return require("lazy").setup({
 		lazy = false,
 		priority = 1000,
 		config = function()
+			require("dracula").setup({
+				colors = {
+					bg = "#000000",
+					black = "#000000",
+				},
+				transparent_bg = false,
+			})
 			vim.cmd.colorscheme("dracula")
 		end,
 	},
