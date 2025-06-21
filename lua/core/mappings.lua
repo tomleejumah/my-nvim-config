@@ -9,12 +9,6 @@ vim.api.nvim_set_keymap("n", "<Down>", "<NOP>", { noremap = true, silent = true 
 vim.api.nvim_set_keymap("n", "<Left>", "<NOP>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<Right>", "<NOP>", { noremap = true, silent = true })
 
---Window Resize Custom
-vim.keymap.set("n", "<A-h>", "<C-w><")
-vim.keymap.set("n", "<A-l>", "<C-w>>")
-vim.keymap.set("n", "<A-k>", "<C-w>+")
-vim.keymap.set("n", "<A-j>", "<C-w>-")
-
 -- File navigation with Telescope
 
 vim.keymap.set("n", "<C-f>", ":Telescope find_files<CR>", opts) -- Find files using Ctrl+F
@@ -65,7 +59,13 @@ vim.keymap.set("n", "<leader>sl", ":PersistedLoad<CR>", opts) -- Load session
 vim.keymap.set("v", "<", "<gv", opts) -- Indent left and stay in visual mode
 vim.keymap.set("v", ">", ">gv", opts) -- Indent right and stay in visual mode
 
--- Window navigation (these don't override default vim navigation)
+--Window Resize Custom with ALT
+vim.keymap.set("n", "<A-h>", "<C-w><")
+vim.keymap.set("n", "<A-l>", "<C-w>>")
+vim.keymap.set("n", "<A-k>", "<C-w>+")
+vim.keymap.set("n", "<A-j>", "<C-w>-")
+
+-- Window navigation 
 vim.keymap.set("n", "<C-h>", "<C-w>h", opts) -- Move to left window
 vim.keymap.set("n", "<C-j>", "<C-w>j", opts) -- Move to window below
 vim.keymap.set("n", "<C-k>", "<C-w>k", opts) -- Move to window above

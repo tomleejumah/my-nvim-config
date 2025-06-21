@@ -42,7 +42,17 @@ return require("lazy").setup({
 			require("leap").add_default_mappings()
 		end,
 	},
-
+	--plantuml
+	{
+		"weirongxu/plantuml-previewer.vim",
+		ft = { "plantuml" },
+		dependencies = {
+			"tyru/open-browser.vim",
+		},
+		config = function()
+			vim.g["plantuml_previewer#plantuml_jar_path"] = "/usr/share/java/plantuml/plantuml.jar"
+		end,
+	},
 	-- Surround text objects
 	{
 		"kylechui/nvim-surround",
