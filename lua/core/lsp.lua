@@ -137,15 +137,6 @@ lspconfig.ts_ls.setup({
 	},
 })
 
--- ESLint configuration
---[[ lspconfig.eslint.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
-	root_dir = lspconfig.util.root_pattern(".eslintrc", ".eslintrc.js", ".eslintrc.json", "package.json", ".git"),
-})
-]]
-
 -- Enhanced Kotlin Configuration
 lspconfig.kotlin_language_server.setup({
 	on_attach = on_attach,
@@ -195,11 +186,14 @@ lspconfig.jdtls.setup({
 	root_dir = lspconfig.util.root_pattern("pom.xml", "build.gradle", "gradlew", "mvnw", ".git"),
 	settings = {
 		java = {
-			referencesCodeLens = { enabled = true },
+			referencesCodeLens = { enabled = false },
 			implementationsCodeLens = { enabled = true },
 			inlayHints = { parameterNames = { enabled = "all" } },
 			maven = { downloadSources = true },
 			references = { includeDecompiledSources = true },
+			compile = {
+				nullAnalysis = { mode = "automatic" },
+			},
 			format = { enabled = true },
 			completion = {
 				favoriteStaticMembers = {
@@ -466,7 +460,6 @@ local function setup()
 	setup_completion()
 	setup_formatting()
 	setup_codelens_commands()
-	-- setup_android_intergration()
 end
 
 setup()
