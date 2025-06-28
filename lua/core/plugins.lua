@@ -60,6 +60,14 @@ return require("lazy").setup({
 		config = true,
 	},
 
+	{
+		"eandrju/cellular-automaton.nvim",
+		cmd = "CellularAutomaton", -- lazy-load on command
+		config = function()
+			-- nothing to configure by default, just run animations via command
+			-- e.g., :CellularAutomaton make_it_rain
+		end,
+	},
 	-- Better quickfix list
 	--{
 	-- "kevinhwang91/nvim-bqf",

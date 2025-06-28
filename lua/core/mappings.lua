@@ -19,10 +19,9 @@ vim.keymap.set("n", "<leader>fb", ":Telescope buffers<CR>", opts) -- Browse open
 -- file explorer
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<cr>", opts) -- toggle file explorer
 
--- buffer navigation updated
---[[ vim.keymap.set("n", "<leader>bn", ":bnext<cr>", opts) -- go to next buffer
-vim.keymap.set("n", "<leader>bp", ":bprevious<cr>", opts) -- go to previous buffer
-vim.keymap.set("n", "<leader>bd", ":bdelete<cr>", opts) -- delete current buffer ]]
+--make make_it_rain
+vim.keymap.set("n", "<leader>fml", "<cmd>CellularAutomaton make_it_rain<CR>")
+vim.keymap.set("n", "<leader>fmm", "<cmd>CellularAutomaton game_of_life<CR>")
 
 local function safe_buffer_nav(cmd)
 	return function()
@@ -65,7 +64,7 @@ vim.keymap.set("n", "<A-l>", "<C-w>>")
 vim.keymap.set("n", "<A-k>", "<C-w>+")
 vim.keymap.set("n", "<A-j>", "<C-w>-")
 
--- Window navigation 
+-- Window navigation
 vim.keymap.set("n", "<C-h>", "<C-w>h", opts) -- Move to left window
 vim.keymap.set("n", "<C-j>", "<C-w>j", opts) -- Move to window below
 vim.keymap.set("n", "<C-k>", "<C-w>k", opts) -- Move to window above

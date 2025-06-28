@@ -11,7 +11,7 @@ function ColorPencils()
 
 	-- Window separator
 	vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#444444" })
-	vim.opt.winhighlight = "WinSeparator:WinSeparator"
+	vim.opt.winhighlight = "WinSeparator:WinSeparator" -- Explicitly link highlight
 
 	-- Color column guide line
 	vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#444444" })
@@ -25,7 +25,7 @@ function ColorPencils()
 	vim.api.nvim_set_hl(0, "DiagnosticSignHint", { fg = "#6a9dc7" })
 	vim.api.nvim_set_hl(0, "DiagnosticVirtualTextHint", { fg = "#5a87b5", italic = true })
 
-	vim.api.nvim_set_hl(0, "DiagnosticError", { italic = true })
+	-- vim.api.nvim_set_hl(0, "DiagnosticError", { italic = true }) -- Slightly muted red
 
 	-- Setup diagnostic signs
 	local signs = { Error = "●", Warn = "!", Hint = "󰛩", Info = "➤" }
