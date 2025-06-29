@@ -23,17 +23,34 @@ vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<cr>", opts) -- toggle file exp
 vim.keymap.set("n", "<leader>fml", "<cmd>CellularAutomaton make_it_rain<CR>")
 vim.keymap.set("n", "<leader>fmm", "<cmd>CellularAutomaton game_of_life<CR>")
 
-local function safe_buffer_nav(cmd)
+local function safe_buffer_nav(direction)
 	return function()
-		if vim.bo.buftype ~= "terminal" then
-			vim.cmd(cmd)
+		local current_buf = vim.api.nvim_get_current_buf()
+		local buf_list = vim.api.nvim_list_bufs()
+		local index = vim.fn.index(buf_list, current_buf)
+		local step = direction == "next" and 1 or -1
+		local max_index = #buf_list - 1
+
+		-- Iterate to find the next/previous non-terminal buffer
+		for i = 1, #buf_list do
+			index = (index + step) % #buf_list
+			if index < 0 then
+				index = max_index
+			end
+			local target_buf = buf_list[index + 1] -- Lua is 1-indexed
+			if vim.api.nvim_buf_is_valid(target_buf) and vim.bo[target_buf].buftype ~= "terminal" then
+				vim.api.nvim_set_current_buf(target_buf)
+				return
+			end
 		end
+		print("No non-terminal buffers found")
 	end
 end
 
-vim.keymap.set("n", "<C-n>", safe_buffer_nav("bnext"), { desc = "Next buffer", silent = true })
-vim.keymap.set("n", "<C-p>", safe_buffer_nav("bprevious"), { desc = "Previous buffer", silent = true })
-vim.keymap.set("n", "<C-l>", safe_buffer_nav("ls"), { desc = "List buffers", silent = true })
+-- buufer shortcuts keybindings
+vim.keymap.set("n", "<C-n>", safe_buffer_nav("next"), { desc = "Next non-terminal buffer", silent = true })
+vim.keymap.set("n", "<C-p>", safe_buffer_nav("previous"), { desc = "Previous non-terminal buffer", silent = true })
+vim.keymap.set("n", "<C-l>", ":ls<CR>", { desc = "List buffers", silent = true }) -- Simple buffer list
 
 -- File operations shortcuts
 vim.keymap.set("n", "<leader>w", ":w<CR>", opts) -- Save file
