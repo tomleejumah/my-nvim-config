@@ -47,7 +47,7 @@ local function safe_buffer_nav(direction)
 	end
 end
 
--- buufer shortcuts keybindings
+-- buffer shortcuts keybindings
 vim.keymap.set("n", "<C-n>", safe_buffer_nav("next"), { desc = "Next non-terminal buffer", silent = true })
 vim.keymap.set("n", "<C-p>", safe_buffer_nav("previous"), { desc = "Previous non-terminal buffer", silent = true })
 vim.keymap.set("n", "<C-l>", ":ls<CR>", { desc = "List buffers", silent = true }) -- Simple buffer list
@@ -75,12 +75,6 @@ vim.keymap.set("n", "<leader>sl", ":PersistedLoad<CR>", opts) -- Load session
 vim.keymap.set("v", "<", "<gv", opts) -- Indent left and stay in visual mode
 vim.keymap.set("v", ">", ">gv", opts) -- Indent right and stay in visual mode
 
---Window Resize Custom with ALT
-vim.keymap.set("n", "<A-h>", "<C-w><")
-vim.keymap.set("n", "<A-l>", "<C-w>>")
-vim.keymap.set("n", "<A-k>", "<C-w>+")
-vim.keymap.set("n", "<A-j>", "<C-w>-")
-
 -- Window navigation
 vim.keymap.set("n", "<C-h>", "<C-w>h", opts) -- Move to left window
 vim.keymap.set("n", "<C-j>", "<C-w>j", opts) -- Move to window below
@@ -88,10 +82,16 @@ vim.keymap.set("n", "<C-k>", "<C-w>k", opts) -- Move to window above
 vim.keymap.set("n", "<C-l>", "<C-w>l", opts) -- Move to right window
 
 -- Resize windows with arrows
-vim.keymap.set("n", "<C-Up>", ":resize -2<CR>", opts) -- Decrease window height
+--[[ vim.keymap.set("n", "<C-Up>", ":resize -2<CR>", opts) -- Decrease window height
 vim.keymap.set("n", "<C-Down>", ":resize +2<CR>", opts) -- Increase window height
 vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", opts) -- Decrease window width
-vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", opts) -- Increase window width
+vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", opts) -- Increase window width ]]
+
+-- Custom resizing with ALT and :resize -2
+vim.keymap.set("n", "<A-H>", ":resize -2<CR>", opts)   -- Decrease window height by 2
+vim.keymap.set("n", "<A-L>", ":resize +2<CR>", opts)   -- Increase window height by 2
+vim.keymap.set("n", "<A-K>", ":vertical resize -2<CR>", opts)  -- Decrease window width by 2
+vim.keymap.set("n", "<A-J>", ":vertical resize +2<CR>", opts)  -- Increase window width by 2
 
 -- Move text in visual mode
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", opts) -- Move selected text down
