@@ -10,7 +10,6 @@ vim.api.nvim_set_keymap("n", "<Left>", "<NOP>", { noremap = true, silent = true 
 vim.api.nvim_set_keymap("n", "<Right>", "<NOP>", { noremap = true, silent = true })
 
 -- File navigation with Telescope
-
 vim.keymap.set("n", "<C-f>", ":Telescope find_files<CR>", opts) -- Find files using Ctrl+F
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>", opts) -- Find files by name
 vim.keymap.set("n", "<leader>fg", ":Telescope live_grep<CR>", opts) -- Find text in files (grep)
@@ -26,24 +25,34 @@ vim.keymap.set("n", "<leader>fmm", "<cmd>CellularAutomaton game_of_life<CR>")
 local function safe_buffer_nav(direction)
 	return function()
 		local current_buf = vim.api.nvim_get_current_buf()
-		local buf_list = vim.api.nvim_list_bufs()
-		local index = vim.fn.index(buf_list, current_buf)
-		local step = direction == "next" and 1 or -1
-		local max_index = #buf_list - 1
+		local bufs = vim.tbl_map(function(b)
+			return b.bufnr
+		end, vim.fn.getbufinfo({ buflisted = 1 }))
 
-		-- Iterate to find the next/previous non-terminal buffer
-		for i = 1, #buf_list do
-			index = (index + step) % #buf_list
+		local index = vim.fn.index(bufs, current_buf)
+		local step = direction == "next" and 1 or -1
+
+		for _ = 1, #bufs do
+			index = index + step
 			if index < 0 then
-				index = max_index
+				index = #bufs - 1
 			end
-			local target_buf = buf_list[index + 1] -- Lua is 1-indexed
-			if vim.api.nvim_buf_is_valid(target_buf) and vim.bo[target_buf].buftype ~= "terminal" then
+			if index >= #bufs then
+				index = 0
+			end
+
+			local target_buf = bufs[index + 1]
+			local bt = vim.bo[target_buf].buftype
+			if
+				vim.api.nvim_buf_is_valid(target_buf)
+				and not vim.tbl_contains({ "terminal", "nofile", "prompt" }, bt)
+			then
 				vim.api.nvim_set_current_buf(target_buf)
 				return
 			end
 		end
-		print("No non-terminal buffers found")
+
+		vim.notify("No non-terminal buffers found", vim.log.levels.INFO)
 	end
 end
 
@@ -81,17 +90,11 @@ vim.keymap.set("n", "<C-j>", "<C-w>j", opts) -- Move to window below
 vim.keymap.set("n", "<C-k>", "<C-w>k", opts) -- Move to window above
 vim.keymap.set("n", "<C-l>", "<C-w>l", opts) -- Move to right window
 
--- Resize windows with arrows
---[[ vim.keymap.set("n", "<C-Up>", ":resize -2<CR>", opts) -- Decrease window height
-vim.keymap.set("n", "<C-Down>", ":resize +2<CR>", opts) -- Increase window height
-vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", opts) -- Decrease window width
-vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", opts) -- Increase window width ]]
-
 -- Custom resizing with ALT and :resize -2
-vim.keymap.set("n", "<A-H>", ":resize -2<CR>", opts)   -- Decrease window height by 2
-vim.keymap.set("n", "<A-L>", ":resize +2<CR>", opts)   -- Increase window height by 2
-vim.keymap.set("n", "<A-K>", ":vertical resize -2<CR>", opts)  -- Decrease window width by 2
-vim.keymap.set("n", "<A-J>", ":vertical resize +2<CR>", opts)  -- Increase window width by 2
+vim.keymap.set("n", "<A-k>", ":resize -2<CR>", opts) -- Decrease window height by 2
+vim.keymap.set("n", "<A-j>", ":resize +2<CR>", opts) -- Increase window height by 2
+vim.keymap.set("n", "<A-h>", ":vertical resize -2<CR>", opts) -- Decrease window width by 2
+vim.keymap.set("n", "<A-l>", ":vertical resize +2<CR>", opts) -- Increase window width by 2
 
 -- Move text in visual mode
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", opts) -- Move selected text down
@@ -165,14 +168,13 @@ vim.keymap.set("n", "<leader>?", function()
 	require("which-key").show({ global = false })
 end, { desc = "Buffer Local Keymaps (which-key)" })
 
--- In your Neovim config (init.lua or equivalent)
-vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { noremap = true })
 --terminals (help for keybindings)
 local term_manager = require("core.term_manager")
 
 vim.keymap.set("n", "<leader>tt", term_manager.prompt_terminal, { noremap = true, silent = true })
 
 -- ESC in terminal mode → exit + focus NvimTree
+--vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { noremap = true })
 vim.keymap.set("t", "<Esc>", function()
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), "n", false)
 	vim.defer_fn(term_manager.focus_nvim_tree, 100)

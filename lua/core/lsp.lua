@@ -78,15 +78,26 @@ local on_attach = function(client, bufnr)
 		{ buffer = bufnr, silent = true, noremap = true, desc = "Run CodeLens action" }
 	)
 
-	-- Always enable and refresh CodeLens for all language servers
-	-- This will refresh CodeLens even for servers that don't explicitly declare support
-	vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-		buffer = bufnr,
+-- Always enable and refresh CodeLens for all language servers
+	local function safe_codelens_refresh()
+		local ok, err = pcall(vim.lsp.codelens.refresh)
+		if not ok then
+			vim.notify("CodeLens refresh failed: " .. err, vim.log.levels.WARN)
+		end
+	end
+
+	vim.api.nvim_create_autocmd({ "BufEnter", "InsertLeave" }, {
+		pattern = "*",
 		callback = function()
-			if client.server_capabilities.codeLensProvider then
-				vim.lsp.codelens.refresh()
+			local current_buf = vim.api.nvim_get_current_buf()
+			for _, lsp_client in pairs(vim.lsp.get_clients({ bufnr = current_buf })) do
+				if lsp_client.server_capabilities.codeLensProvider then
+					safe_codelens_refresh()
+					break
+				end
 			end
 		end,
+		desc = "Refresh CodeLens safely on BufEnter and InsertLeave",
 	})
 end
 
@@ -429,37 +440,10 @@ local function setup_formatting()
 	})
 end
 
--- Function to setup CodeLens commands
-local function setup_codelens_commands()
-	-- Setup global autocommand for CodeLens refresh
-	vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "CursorHold" }, {
-		pattern = "*",
-		callback = function()
-			vim.lsp.codelens.refresh()
-		end,
-	})
-
-	-- Enable CodeLens auto-refresh when cursor is moved
-	vim.api.nvim_create_autocmd("CursorMoved", {
-		pattern = "*",
-		callback = function()
-			local bufnr = vim.api.nvim_get_current_buf()
-			for _, client in pairs(vim.lsp.get_clients({ bufnr = bufnr })) do
-				if client.server_capabilities.codeLensProvider then
-					vim.lsp.codelens.refresh()
-					break
-				end
-			end
-		end,
-		desc = "Auto-refresh CodeLens when cursor is moved",
-	})
-end
-
 -- Initialize everything
 local function setup()
 	setup_completion()
 	setup_formatting()
-	setup_codelens_commands()
 end
 
 setup()
