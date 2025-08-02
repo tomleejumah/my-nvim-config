@@ -78,7 +78,7 @@ local on_attach = function(client, bufnr)
 		{ buffer = bufnr, silent = true, noremap = true, desc = "Run CodeLens action" }
 	)
 
--- Always enable and refresh CodeLens for all language servers
+	-- Always enable and refresh CodeLens for all language servers
 	local function safe_codelens_refresh()
 		local ok, err = pcall(vim.lsp.codelens.refresh)
 		if not ok then
@@ -224,7 +224,12 @@ lspconfig.jdtls.setup({
 			},
 		},
 	},
-	init_options = { bundles = {} },
+	init_options = {
+		bundles = {},
+		trace = {
+			server = "verbose",
+		},
+	},
 	on_attach = on_attach,
 	capabilities = capabilities,
 })
