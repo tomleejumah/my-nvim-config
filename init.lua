@@ -33,6 +33,14 @@ vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("data") .. "/undofiles"
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+vim.o.foldenable = false
+vim.o.foldcolumn = "1"
+vim.o.foldlevelstart = 99
+vim.o.fillchars = "eob: ,fold: ,foldopen:,foldsep: ,foldclose:"
+--vim.o.foldtext = "getline(v:foldstart)"
+vim.o.foldtext = ""
 
 -- Load core modules
 require("core.plugins")
