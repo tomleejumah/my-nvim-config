@@ -1,4 +1,14 @@
 function ColorPencils()
+
+	-- Make background transparent
+	vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+	vim.api.nvim_set_hl(0, "NonText", { bg = "NONE" })
+	vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE" })
+	vim.api.nvim_set_hl(0, "LineNr", { bg = "NONE" })
+	vim.api.nvim_set_hl(0, "CursorLineNr", { bg = "NONE" })
+
+	-- Make nvim-tree transparent too
+	vim.api.nvim_set_hl(0, "NvimTreeNormal", { bg = "NONE" })
 	-- LSP CodeLens highlights
 	vim.api.nvim_set_hl(0, "LspCodeLens", { fg = "#777777", italic = true })
 	vim.api.nvim_set_hl(0, "LspCodeLensText", { fg = "#777777", italic = true })
