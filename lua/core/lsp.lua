@@ -416,7 +416,7 @@ local function setup_formatting()
 			xml = { "xmllint", "prettier" },
 			css = { "prettier" },
 		},
-		format_on_save = false, -- disable save-based formatting
+		format_on_save = false,
 	})
 
 	-- Format on InsertLeave
@@ -439,8 +439,13 @@ local function setup_formatting()
 			"*.cpp",
 			"*.xml",
 		},
-		callback = function()
-			require("conform").format({ bufnr = 0, async = true })
+		callback = function(args)
+			vim.defer_fn(function()
+				if vim.api.nvim_buf_is_valid(args.buf) and vim.fn.mode() ~= "i" then
+					require("conform").format({ bufnr = args.buf, async = true })
+					vim.cmd("silent! write")
+				end
+			end, 1500)
 		end,
 	})
 end
