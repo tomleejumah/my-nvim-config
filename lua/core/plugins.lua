@@ -107,6 +107,49 @@ return require("lazy").setup({
 		main = "ibl",
 	},
 
+	--AI Completion
+	{
+		"olimorris/codecompanion.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-treesitter/nvim-treesitter",
+		},
+		config = function()
+			require("codecompanion").setup({
+				adapters = {
+					gemini = function()
+						return require("codecompanion.adapters").extend("gemini", {
+							env = {
+								api_key = "GEMINI_API_KEY",
+							},
+						})
+					end,
+				},
+				strategies = {
+					chat = { adapter = "gemini" },
+					inline = { adapter = "gemini" },
+				},
+			})
+
+			vim.keymap.set("n", "<leader>ac", "<cmd>CodeCompanionChat<CR>")
+			vim.keymap.set("n", "<leader>aa", "<cmd>CodeCompanionActions<CR>")
+		end,
+	},
+
+	-- Codeium (ghost-text completion)
+	{
+		"Exafunction/codeium.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"hrsh7th/nvim-cmp",
+		},
+		config = function()
+			require("codeium").setup({
+				idle_delay = 75,
+			})
+		end,
+	},
+
 	-- Autocompletion
 	{
 		"hrsh7th/nvim-cmp",
