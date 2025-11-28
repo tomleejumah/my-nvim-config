@@ -35,12 +35,12 @@ local on_attach = function(client, bufnr)
 		vim.lsp.buf.hover,
 		{ buffer = bufnr, silent = true, noremap = true, desc = "Show hover documentation" }
 	)
-	vim.keymap.set(
+	--[[ vim.keymap.set(
 		"n",
 		"<C-k>",
 		vim.lsp.buf.signature_help,
 		{ buffer = bufnr, silent = true, noremap = true, desc = "Show signature help" }
-	)
+	) ]]
 	vim.keymap.set(
 		"i",
 		"<C-p>",
