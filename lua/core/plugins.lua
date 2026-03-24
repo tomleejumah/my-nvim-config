@@ -220,12 +220,39 @@ return require("lazy").setup({
 		config = true,
 	},
 
-	{
+	--[[ {
 		"numToStr/Comment.nvim",
 		config = function()
 			require("Comment").setup()
 		end,
-	},
+	}, ]]
+
+
+    {
+      "numToStr/Comment.nvim",
+      dependencies = {
+        "JoosepAlviste/nvim-ts-context-commentstring",
+      },
+      config = function()
+        require("ts_context_commentstring").setup({
+          enable_autocmd = false,
+        })
+        require("Comment").setup({
+          sticky = false,
+          ignore = "^$",
+          padding = true,
+          pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+          post_hook = function(ctx)
+            if ctx.range.srow == ctx.range.erow then
+              vim.cmd("normal! j")
+            else
+              vim.cmd("normal! '>j")
+            end
+          end,
+        })
+      end,
+    },
+
 	--GPT
 	{
 		"robitx/gp.nvim",

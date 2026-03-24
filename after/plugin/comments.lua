@@ -1,4 +1,4 @@
-require("Comment").setup({
+--[[ require("Comment").setup({
 	sticky = false,
 	ignore = "^$",
 	padding = true,
@@ -16,4 +16,4 @@ require("Comment").setup({
 vim.keymap.set("n", "<C-_>", "<leader>gcc", { remap = true })
 vim.keymap.set("v", "<C-_>", "<leader>gb", { remap = true })
 vim.keymap.set("n", "<leader>/", "gcA", { remap = true })
-vim.keymap.set("v", "<leader>/", "gcA", { remap = true })
+vim.keymap.set("v", "<leader>/", "gcA", { remap = true }) ]]

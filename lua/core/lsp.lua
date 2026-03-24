@@ -1,6 +1,6 @@
 -- LSP Configuration
 vim = vim
-lspconfig = require("lspconfig")
+local lspconfig = require("lspconfig")
 
 -- LSP Attach Function with Keybindings
 local on_attach = function(client, bufnr)
@@ -368,10 +368,10 @@ lspconfig.lua_ls.setup({
 			diagnostics = {
 				globals = { "vim" },
 			},
-			workspace = {
-				library = vim.api.nvim_get_runtime_file("", true),
-				checkThirdParty = false,
-			},
+            workspace = {
+              library = { vim.env.VIMRUNTIME },
+              checkThirdParty = false,
+            },
 			telemetry = {
 				enable = false,
 			},

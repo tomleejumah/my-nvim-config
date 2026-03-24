@@ -146,6 +146,12 @@ vim.keymap.set("n", "gR", "<cmd>TroubleToggle lsp_references<cr>", { desc = "LSP
 --persistance yank
 vim.keymap.set("x", "<leader>p", [["_dP]], { noremap = true, silent = true })
 
+--Comments
+vim.keymap.set("n", "<C-_>", "<leader>gcc", { remap = true })
+vim.keymap.set("v", "<C-_>", "<leader>gb", { remap = true })
+vim.keymap.set("n", "<leader>/", "gcA", { remap = true })
+vim.keymap.set("v", "<leader>/", "gcA", { remap = true })
+
 -- Persistence.nvim keymaps (session management)
 
 -- Restore session
