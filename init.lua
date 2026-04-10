@@ -41,6 +41,7 @@ vim.o.foldlevelstart = 99
 vim.o.fillchars = "eob: ,fold: ,foldopen:,foldsep: ,foldclose:"
 --vim.o.foldtext = "getline(v:foldstart)"
 vim.o.foldtext = ""
+vim.opt.autoread = true
 
 -- Load core modules
 require("core.plugins")
