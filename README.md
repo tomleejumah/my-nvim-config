@@ -1,3 +1,15 @@
+# Neovim Configuration (Archived)
+
+> [!IMPORTANT]
+> **This project has been archived and is no longer maintained.**
+> The actively maintained Neovim configuration is now part of [my-dot-files](https://github.com/tomleejumah/my-dot-files).
+>
+> **For the latest configuration and updates, see [`.config/nvim` in my-dot-files](https://github.com/tomleejumah/my-dot-files/tree/master/.config/nvim).**
+
+The documentation below is retained for historical reference and may no longer reflect the current setup.
+
+---
+
 ## Java (jdtls) Configuration for cross-platform
 
 The Current setup is configured to work with arch and Debian distros.To configure support for Windows, macOS, and Linux, with dynamic path detection, Use the following Guidance to configure the `jdtls` (Java Development Tools Language Server). This setup supports features like code completion, navigation, CodeLens, inlay hints, and formatting.
